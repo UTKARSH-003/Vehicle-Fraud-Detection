@@ -1,0 +1,204 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: fraud
+    description: Vehicle insurance fraud model and claim triage
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /fraud/overview:
+    get:
+      operationId: getFraudOverview
+      tags: [fraud]
+      summary: Get the trained model and dataset overview
+      responses:
+        "200":
+          description: Dataset overview and selected-model summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FraudOverview"
+  /fraud/metrics:
+    get:
+      operationId: getFraudMetrics
+      tags: [fraud]
+      summary: Compare model metrics on the held-out test set
+      responses:
+        "200":
+          description: Precision, recall, ranking metrics, and confusion matrices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FraudMetrics"
+  /fraud/features:
+    get:
+      operationId: getFraudFeatureCatalog
+      tags: [fraud]
+      summary: Get fields and valid values for entering a claim
+      responses:
+        "200":
+          description: Feature definitions derived from the training dataset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FraudFeatureCatalog"
+  /fraud/predict:
+    post:
+      operationId: createFraudPrediction
+      tags: [fraud]
+      summary: Score a claim for investigator triage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FraudPredictionInput"
+      responses:
+        "200":
+          description: Fraud risk score and triage guidance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FraudPrediction"
+        "400":
+          description: Invalid or incomplete claim fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    FraudOverview:
+      type: object
+      properties:
+        status: { type: string }
+        datasetRows: { type: integer }
+        fraudCases: { type: integer }
+        fraudRate: { type: number }
+        featureCount: { type: integer }
+        selectedModel: { type: string }
+        selectionStrategy: { type: string }
+        decisionThreshold: { type: number }
+        caveats:
+          type: array
+          items: { type: string }
+      required: [status, datasetRows, fraudCases, fraudRate, featureCount, selectedModel, selectionStrategy, decisionThreshold, caveats]
+    FraudConfusionMatrix:
+      type: object
+      properties:
+        trueNegative: { type: integer }
+        falsePositive: { type: integer }
+        falseNegative: { type: integer }
+        truePositive: { type: integer }
+      required: [trueNegative, falsePositive, falseNegative, truePositive]
+    FraudModelMetric:
+      type: object
+      properties:
+        model: { type: string }
+        precision: { type: number }
+        recall: { type: number }
+        f1: { type: number }
+        rocAuc: { type: number }
+        prAuc: { type: number }
+        threshold: { type: number }
+        confusionMatrix:
+          $ref: "#/components/schemas/FraudConfusionMatrix"
+      required: [model, precision, recall, f1, rocAuc, prAuc, threshold, confusionMatrix]
+    FraudMetrics:
+      type: object
+      properties:
+        selectedModel: { type: string }
+        testRecords: { type: integer }
+        selectionStrategy: { type: string }
+        models:
+          type: array
+          items:
+            $ref: "#/components/schemas/FraudModelMetric"
+      required: [selectedModel, testRecords, selectionStrategy, models]
+    FraudFeature:
+      type: object
+      properties:
+        name: { type: string }
+        label: { type: string }
+        group: { type: string }
+        kind:
+          type: string
+          enum: [categorical, numeric]
+        options:
+          type: array
+          items: { type: string }
+        minimum: { type: ["number", "null"] }
+        maximum: { type: ["number", "null"] }
+        step: { type: ["number", "null"] }
+      required: [name, label, group, kind, options, minimum, maximum, step]
+    FraudFeatureCatalog:
+      type: object
+      properties:
+        featureCount: { type: integer }
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/FraudFeature"
+      required: [featureCount, features]
+    FraudPredictionInput:
+      type: object
+      properties:
+        features:
+          type: object
+          additionalProperties:
+            oneOf:
+              - { type: string }
+              - { type: number }
+        threshold:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Defaults to the selected model's validation threshold when omitted.
+      required: [features]
+    FraudPrediction:
+      type: object
+      properties:
+        fraudRiskScore: { type: number }
+        decisionThreshold: { type: number }
+        riskLevel:
+          type: string
+          enum: [low, review, high]
+        recommendation: { type: string }
+        model: { type: string }
+        limitations:
+          type: array
+          items: { type: string }
+      required: [fraudRiskScore, decisionThreshold, riskLevel, recommendation, model, limitations]
+    ApiError:
+      type: object
+      properties:
+        error: { type: string }
+      required: [error]
+

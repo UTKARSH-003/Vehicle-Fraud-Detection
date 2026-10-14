@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --background: 42 33% 96%;
+  --foreground: 213 25% 19%;
+  --border: 39 18% 85%;
+  --input: 39 18% 85%;
+  --ring: 164 34% 34%;
+  --card: 42 38% 99%;
+  --card-foreground: 213 25% 19%;
+  --primary: 164 34% 30%;
+  --primary-foreground: 42 38% 99%;
+  --secondary: 41 25% 91%;
+  --secondary-foreground: 213 24% 24%;
+  --muted: 42 25% 92%;
+  --muted-foreground: 212 11% 48%;
+  --accent: 35 58% 84%;
+  --accent-foreground: 27 40% 28%;
+  --destructive: 4 57% 46%;
+  --destructive-foreground: 0 0% 100%;
+  --popover: 42 38% 99%;
+  --popover-foreground: 213 25% 19%;
+  --chart-1: 164 34% 34%;
+  --chart-2: 28 66% 56%;
+  --chart-3: 211 29% 48%;
+  --chart-4: 3 48% 55%;
+  --chart-5: 43 48% 56%;
+  --sidebar: 208 28% 18%;
+  --sidebar-foreground: 42 25% 92%;
+  --sidebar-border: 210 19% 27%;
+  --sidebar-primary: 164 38% 54%;
+  --sidebar-primary-foreground: 208 28% 15%;
+  --sidebar-accent: 210 22% 25%;
+  --sidebar-accent-foreground: 42 30% 95%;
+  --sidebar-ring: 164 38% 54%;
+  --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-display: 'Manrope', sans-serif;
+  --app-font-mono: 'DM Mono', monospace;
+  --radius: 12px;
+}
+.dark {
+  --background: 210 24% 12%;
+  --foreground: 42 25% 92%;
+  --border: 210 17% 27%;
+  --input: 210 17% 27%;
+  --ring: 164 38% 54%;
+  --card: 210 22% 16%;
+  --card-foreground: 42 25% 92%;
+  --primary: 164 38% 54%;
+  --primary-foreground: 210 24% 12%;
+  --secondary: 210 20% 22%;
+  --secondary-foreground: 42 25% 92%;
+  --muted: 210 20% 22%;
+  --muted-foreground: 210 10% 65%;
+  --accent: 35 34% 30%;
+  --accent-foreground: 42 25% 92%;
+  --destructive: 4 48% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --popover: 210 22% 16%;
+  --popover-foreground: 42 25% 92%;
+  --sidebar: 210 28% 10%;
+  --sidebar-foreground: 42 25% 92%;
+  --sidebar-border: 210 19% 20%;
+  --sidebar-primary: 164 38% 54%;
+  --sidebar-primary-foreground: 210 24% 12%;
+  --sidebar-accent: 210 22% 19%;
+  --sidebar-accent-foreground: 42 30% 95%;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--app-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.font-display { font-family: var(--app-font-display); }
+.font-mono { font-family: var(--app-font-mono); }
+.rise-in { animation: rise-in .48s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

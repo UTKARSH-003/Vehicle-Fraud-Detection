@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ClaimSignal — Vehicle Fraud Triage"
+description = "A vehicle insurance claim triage app that presents model evaluation, compares precision and recall across trained classifiers, and scores a claim using the supplied vehicle insurance dataset."
+version = "1.0.0"
+id = "artifacts/claim-fraud"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20611
+
+[services.development]
+run = "pnpm --filter @workspace/claim-fraud run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/claim-fraud", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/claim-fraud/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20611"
+BASE_PATH = "/"
